@@ -1,0 +1,44 @@
+name: base
+channels:
+    - conda-forge
+    - fvcore
+    - iopath
+    - bottler
+    - pytorch 
+    - pytorch3d 
+
+dependencies:
+    #Python. 
+    - python = 3.8
+
+    #Jupyterlab. 
+    - ipykernel
+    - nodejs
+    - jupyterlab
+    - ipympl 
+    - neptune-notebooks
+
+    #Some libs.
+    - numpy
+    - scikit-image
+    - matplotlib
+    - neptune-client
+    - tqdm 
+    - setproctitle
+
+
+    #Install PyTorch. 
+    - pytorch==1.7.1 
+    - torchvision==0.8.2 
+    - torchaudio==0.7.2 
+    - cudatoolkit=11.0
+
+    #Requirements for PyTorch3D. 
+    - fvcore 
+    - iopath
+    - nvidiacub 
+
+    #Install PyTorch3D. 
+    - pytorch3d==0.4.0 
+
+
