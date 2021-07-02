@@ -1,0 +1,19 @@
+name: tensorflow
+channels:
+    - anaconda
+
+dependencies:
+  
+    #Install TensorFlow and keras.
+    - tensorflow-gpu 
+    - keras
+
+    #pip packages
+    - pip 
+    - pip: 
+        - tensorflow-graphics #Install TensorGraphics. 
+    
+    #Jupyter kernel
+    - ipykernel 
+
+

@@ -2,13 +2,13 @@ version: "2.3"
 
 services:
   lab:
-    image: "gaetanlandreau/pytorch3d:v0.0.1"
+    image: "gaetanlandreau/ai-deep3d:v0.0.0"
     runtime: nvidia
     build: . 
     restart: always
     shm_size: '2gb'
-    env_file:
-      - .env
+    #env_file:
+      #- .env
     environment:
       - AWS_PROFILE=rd
       - NEPTUNE_API_TOKEN
@@ -28,8 +28,8 @@ services:
       - ${HOME}/.jupyter/jupyter_notebook_config.json:/root/.jupyter/jupyter_notebook_config.json
 
   dev:
-    image: "gaetanlandreau/pytorch3d:latest"
-    container_name: dev-adaptativesr_gaetan
+    image: "gaetanlandreau/ai-deep3d:v0.0.0"
+    container_name: dev-dockerai_gaetan
     runtime: nvidia
     build: . 
     restart: always
@@ -43,7 +43,7 @@ services:
           
       - /home/gaetan/PhD/AdaptativeSR/:/root/   # Mount the root folder of the project. 
       - /data1/gaetan/PhD/:/datadrive/          # Datadrive on Athena. 
-    
+      
       - ${HOME}/.aws/config:/root/.aws/config:ro
       - ${HOME}/.aws/credentials:/root/.aws/credentials:ro
       - ${HOME}/.jupyter/jupyter_notebook_config.json:/root/.jupyter/jupyter_notebook_config.json

@@ -1,0 +1,31 @@
+name: pytorch
+channels:
+    - conda-forge
+    - fvcore
+    - iopath
+    - bottler
+    - pytorch 
+    - pytorch3d 
+
+dependencies:
+  
+    #Install PyTorch 1.8.0
+    - pytorch==1.8.0 
+    - torchvision==0.9.0 
+    - torchaudio==0.8.0 
+    - cudatoolkit=11.1 
+
+    #Requirements for PyTorch3D. 
+    - fvcore 
+    - iopath
+    - nvidiacub 
+
+    #Install PyTorch3D. 
+    - pytorch3d==0.4.0 
+    
+    #Jupyter kernel
+    - ipykernel 
+
+   
+
+

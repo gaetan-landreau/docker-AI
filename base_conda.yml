@@ -4,8 +4,6 @@ channels:
     - fvcore
     - iopath
     - bottler
-    - pytorch 
-    - pytorch3d 
 
 dependencies:
     #Python. 
@@ -17,6 +15,7 @@ dependencies:
     - jupyterlab
     - ipympl 
     - neptune-notebooks
+    - ipykernel
 
     #Some libs.
     - numpy
@@ -26,19 +25,15 @@ dependencies:
     - tqdm 
     - setproctitle
 
+    #Cpp related libs. 
+    - cmake
 
-    #Install PyTorch. 
-    - pytorch==1.7.1 
-    - torchvision==0.8.2 
-    - torchaudio==0.7.2 
-    - cudatoolkit=11.0
+    #pip packages
+    - pip 
+    - pip:
+        - pykeops
+        - geomloss
 
-    #Requirements for PyTorch3D. 
-    - fvcore 
-    - iopath
-    - nvidiacub 
-
-    #Install PyTorch3D. 
-    - pytorch3d==0.4.0 
+   
 
 
