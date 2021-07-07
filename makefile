@@ -4,9 +4,10 @@ dpl ?= /home/gaetan/.dockerhub.env
 include $(dpl)
 export $(shell sed 's/=.*//' $(dpl))
 
-DOCKER_NAME ?=pytorch3d
+DOCKER_NAME ?=ai-deep3d#pytorch3d
 DOCKER_USR ?=gaetanlandreau
 
+#DOCKER_NAME ?=
 build: ## Build the container
 	 docker build -t $(DOCKER_USR)/$(DOCKER_NAME) .
 

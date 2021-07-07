@@ -1,19 +1,13 @@
 name: tensorflow
 channels:
     - anaconda
-
+    - conda-forge
 dependencies:
-  
-    #Install TensorFlow and keras.
-    - tensorflow-gpu 
-    - keras
 
     #pip packages
     - pip 
     - pip: 
+        - tensorflow-gpu #Install TensorFlow 
         - tensorflow-graphics #Install TensorGraphics. 
-    
-    #Jupyter kernel
-    - ipykernel 
 
 

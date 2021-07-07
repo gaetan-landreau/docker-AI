@@ -12,10 +12,13 @@ dependencies:
     #Jupyterlab. 
     - ipykernel
     - nodejs
+    - nb_conda_kernels
     - jupyterlab
     - ipympl 
     - neptune-notebooks
     - ipykernel
+    - ipyparallel
+    - ipython
 
     #Some libs.
     - numpy
@@ -25,14 +28,13 @@ dependencies:
     - tqdm 
     - setproctitle
 
-    #Cpp related libs. 
-    - cmake
 
     #pip packages
     - pip 
     - pip:
         - pykeops
         - geomloss
+        - Cython 
 
    
 

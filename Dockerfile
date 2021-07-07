@@ -12,7 +12,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt install -qy libglib2.0-0 \
     && apt install -y openssh-server \
-    && apt-get install -y --no-install-recommends git wget curl g++ cmake unzip bzip2 build-essential ca-certificates \
+    && apt-get install -y --no-install-recommends git wget curl vim g++ cmake unzip bzip2 build-essential ca-certificates \
+    && apt-get install -y openexr libopenexr-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
 
@@ -31,38 +32,41 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda$CONDA_PYTHON_VERS
     && rm -rf /var/lib/apt/lists/* 
 
 
-
 ############################################################
-#Update the base conda env. with the corresponding YAML file. 
+#Update the base conda env. with the corresponding YAML file 
 ############################################################
 COPY base_conda.yml /tmp/base_conda.yml
 RUN conda update --all \
     && conda env update -f /tmp/base_conda.yml \
-    && rm /tmp/base_conda.yml \ 
+    && rm /tmp/base_conda.yml \
 
     #Also install JupyterLab extension in this base env.
     && jupyter labextension install @jupyterlab/toc \
     && jupyter lab build --name=$JUPYTERLAB_NAME \
     && jupyter nbextension enable --py neptune-notebooks
 
+############################################################
+# Create the conda env. for TensorFlow + TensorFlow Graphics
+############################################################
+COPY tensorflow_conda.yml /tmp/tensorflow_conda.yml
+RUN conda create --clone base --name tensorflow \
+    && conda env update -f /tmp/tensorflow_conda.yml \
+    && rm /tmp/tensorflow_conda.yml 
+
+SHELL ["conda","run","-n","tensorflow","/bin/bash","-c"]
+#RUN conda env update -f /tmp/tensorflow_conda.yml \
+RUN python3 -m ipykernel install --user  --name tensorflow --display-name "TensorFlow" 
 
 ###############################################
 # Create the conda env. for PyTorch + PyTorch3D
 ###############################################
 COPY pytorch_conda.yml /tmp/pytorch_conda.yml
-RUN conda create -f /tmp/pytorch_conda.yml --clone base_conda
+RUN conda create --clone base --name pytorch \
+    && conda env update -f /tmp/pytorch_conda.yml \
+    && rm /tmp/pytorch_conda.yml 
+#RUN conda env create -f /tmp/pytorch_conda.yml   
 SHELL ["conda","run","-n","pytorch","/bin/bash","-c"]
-RUN python -m ipykernel install --name kernel_one --display-name "PyTorch"
-    && rm /tmp/pytorch_conda.yml \ 
-
-############################################################
-# Create the conda env. for TensorFlow + TensorFlow Graphics
-############################################################
-COPY tensorflow_conda.yml /tmp/tensorflow_conda.yml
-RUN conda create -f /tmp/tensorflow_conda.yml --clone base_conda
-SHELL ["conda","run","-n","tensorflow","/bin/bash","-c"]
-RUN python -m ipykernel install --name kernel_one --display-name "TensorFlow"
-    && rm /tmp/tensorflow_conda.yml \
+RUN python -m ipykernel install --user  --name pytorch  --display-name "PyTorch" 
 
 
 

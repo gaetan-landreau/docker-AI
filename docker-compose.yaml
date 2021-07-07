@@ -2,7 +2,7 @@ version: "2.3"
 
 services:
   lab:
-    image: "gaetanlandreau/ai-deep3d:v0.0.0"
+    image: "gaetanlandreau/ai-deep3d:latest"
     runtime: nvidia
     build: . 
     restart: always
@@ -15,7 +15,7 @@ services:
 
     command: "jupyter-lab --ip=0.0.0.0 --allow-root --no-browser"
     ports:
-      - 6841:8888
+      - 6843:8888
     working_dir: /root/
     volumes:
       
@@ -27,8 +27,8 @@ services:
 
       - ${HOME}/.jupyter/jupyter_notebook_config.json:/root/.jupyter/jupyter_notebook_config.json
 
-  dev:
-    image: "gaetanlandreau/ai-deep3d:v0.0.0"
+  dev_ai:
+    image: "gaetanlandreau/ai-deep3d:latest"
     container_name: dev-dockerai_gaetan
     runtime: nvidia
     build: . 
@@ -37,7 +37,7 @@ services:
     tty: true
     environment:
         - AWS_PROFILE=rd
-    command : tail -f /dev/null
+    command : /bin/bash
     working_dir: /root/
     volumes:
           
