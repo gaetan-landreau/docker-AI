@@ -7,6 +7,7 @@ dependencies:
     #pip packages
     - pip 
     - pip: 
+        - OpenEXR
         - tensorflow-gpu #Install TensorFlow 
         - tensorflow-graphics #Install TensorGraphics. 
 
