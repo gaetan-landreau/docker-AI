@@ -3,15 +3,17 @@
 dpl ?= /home/gaetan/.dockerhub.env
 include $(dpl)
 export $(shell sed 's/=.*//' $(dpl))
-
-DOCKER_NAME ?=ai-deep3d#pytorch3d
+ #ai-deep3d#pytorch3d
+DOCKER_NAME ?=pytorch3d
 DOCKER_USR ?=gaetanlandreau
 
 #DOCKER_NAME ?=
-build: ## Build the container
+build: ## Build the image
 	 docker build -t $(DOCKER_USR)/$(DOCKER_NAME) .
+build-f: ## Build the image based on a specific Dockerfile (with more than one exist in the current dir.)
+	docker build -t $(DOCKER_USR)/$(DOCKER_NAME) -f $(DOCKERFILE) . 
 
-build-nc: ## Build the container without caching
+build-nc: ## Build the image without caching
 	 docker build --no-cache -t $(DOCKER_USR)/$(DOCKER_NAME) .
 
 stop: ## Stop and remove a running container
