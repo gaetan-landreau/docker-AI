@@ -42,7 +42,7 @@ services:
     links: 
       - lab:lab 
  
-    command: "mlflow server -h 0.0.0.0 --backend-store-uri /mlruns_backend/ --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
+    command: "mlflow server -h 0.0.0.0 --backend-store-uri ${ML_BACKEND_PATH} --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
     ports:
       - 5000:5000    
 
