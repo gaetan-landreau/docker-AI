@@ -1,49 +1,59 @@
-version: "2.3"
+version: "3.5"
 
 services:
   lab:
-    image: "gaetanlandreau/ai-deep3d:latest"
+    image: "gaetanlandreau/pytorch3d:v0.0.1"
     runtime: nvidia
     build: . 
     restart: always
     shm_size: '2gb'
-    #env_file:
-      #- .env
-    environment:
-      - AWS_PROFILE=rd
-      - NEPTUNE_API_TOKEN
-
-    command: "jupyter-lab --ip=0.0.0.0 --allow-root --no-browser"
+    env_file:
+      - .env
+    command: "jupyter-lab --ip=0.0.0.0 --allow-root --no-browser"  
     ports:
       - 6843:8888
     working_dir: /root/
     volumes:
+
+      # AWS credentials. 
+      - type: bind
+        source: /home/gaetan/.aws/
+        target: /root/.aws
       
-      - /home/gaetan/PhD/AdaptativeSR/:/root/   # Mount the root folder of the project. 
-      - /data1/gaetan/PhD/:/datadrive/          # Datadrive on Athena. 
+      # Datadrive backend saving on Athena. 
+      - type: bind
+        source: /data1/gaetan/PhD/mlruns_backend/
+        target: /mlruns_backend/ 
 
-      - ${HOME}/.aws/config:/root/.aws/config:ro
-      - ${HOME}/.aws/credentials:/root/.aws/credentials:ro
+      # Mount the root folder of the project. 
+      - type: bind
+        source: /home/gaetan/PhD/AdaptativeSR/
+        target: /root/
 
-      - ${HOME}/.jupyter/jupyter_notebook_config.json:/root/.jupyter/jupyter_notebook_config.json
+  mlflow:
+    build: 
+      context: . 
+      dockerfile: Dockerfile.mlflow
+        
+    image: "gaetanlandreau/mlflow:latest"
+    container_name: mlflow-tracking
+    env_file:
+      - .env
+    links: 
+      - lab:lab 
+ 
+    command: "mlflow server -h 0.0.0.0 --backend-store-uri /mlruns_backend/ --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
+    ports:
+      - 5000:5000    
 
-  dev_ai:
-    image: "gaetanlandreau/ai-deep3d:latest"
-    container_name: dev-dockerai_gaetan
-    runtime: nvidia
-    build: . 
-    restart: always
-    shm_size: '2gb'
-    tty: true
-    environment:
-        - AWS_PROFILE=rd
-    command : /bin/bash
-    working_dir: /root/
     volumes:
-          
-      - /home/gaetan/PhD/AdaptativeSR/:/root/   # Mount the root folder of the project. 
-      - /data1/gaetan/PhD/:/datadrive/          # Datadrive on Athena. 
+     
+      # AWS credentials. 
+      - type: bind
+        source: /home/gaetan/.aws/
+        target: /root/.aws
       
-      - ${HOME}/.aws/config:/root/.aws/config:ro
-      - ${HOME}/.aws/credentials:/root/.aws/credentials:ro
-      - ${HOME}/.jupyter/jupyter_notebook_config.json:/root/.jupyter/jupyter_notebook_config.json
+      # Datadrive backend saving on Athena. 
+      - type: bind
+        source: /data1/gaetan/PhD/mlruns_backend/
+        target: /mlruns_backend/ 
