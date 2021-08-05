@@ -13,17 +13,23 @@ services:
     ports:
       - 6843:8888
     working_dir: /root/
+
     volumes:
 
       # AWS credentials. 
       - type: bind
         source: /home/gaetan/.aws/
         target: /root/.aws
-      
-      # Datadrive backend saving on Athena. 
+
+      #ssh Key
       - type: bind
-        source: /data1/gaetan/PhD/mlruns_backend/
-        target: /mlruns_backend/ 
+        source: /home/gaetan/.ssh/
+        target: /root/.ssh/
+       
+      # Datadrive on Athena. 
+      - type: bind
+        source: /data1/gaetan/PhD/
+        target: /data/
 
       # Mount the root folder of the project. 
       - type: bind
@@ -42,7 +48,7 @@ services:
     links: 
       - lab:lab 
  
-    command: "mlflow server -h 0.0.0.0 --backend-store-uri ${ML_BACKEND_PATH} --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
+    command: "mlflow server -h 0.0.0.0 --backend-store-uri /mlruns_backend/ --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
     ports:
       - 5000:5000    
 
@@ -57,3 +63,7 @@ services:
       - type: bind
         source: /data1/gaetan/PhD/mlruns_backend/
         target: /mlruns_backend/ 
+
+secrets: 
+  ssh_key:
+    file: /home/gaetan/.ssh/id_rsa
