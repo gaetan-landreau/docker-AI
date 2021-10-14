@@ -1,0 +1,31 @@
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
+
+# Minimal required libs + Python3.8 
+RUN apt-get update \
+    && apt-get update \ 
+    && apt-get upgrade -y \
+
+    #Install Python 3.8 with pip. 
+    && apt-get install -y software-properties-common \ 
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y python3.8 python3.8-dev python3-pip python3-distutils python3-setuptools \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1 \
+    && update-alternatives --set python /usr/bin/python3.8 \
+    && python -m pip install --upgrade pip \
+
+    #Install basic utilities.
+    && apt install -qy libglib2.0-0 \
+    && apt install -y openssh-server \
+    && apt-get install -y --no-install-recommends git wget curl gcc g++ cmake unzip bzip2 build-essential ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
+
+    
+# Install PyTorch 1.9.0 
+COPY requirements_torch.txt /tmp/requirements_torch.txt
+RUN pip install --no-cache-dir -r /tmp/requirements_torch.txt \
+    && rm -r /tmp/requirements_torch.txt \
+    # + TensorRT
+    && pip install nvidia-pyindex --extra-index-url https://pypi.ngc.nvidia.com \
+    && pip install --upgrade nvidia-tensorrt 
