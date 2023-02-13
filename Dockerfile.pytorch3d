@@ -1,51 +1,23 @@
-FROM nvidia/cuda:11.0-cudnn8-devel-ubuntu18.04
+FROM gaetanlandreau/pytorch:1.11.0
 
-ARG CONDA_DIR=/opt/conda
-ARG CONDA_PYTHON_VERSION=3
-ARG JUPYTERLAB_NAME=torch3d_lab 
+ARG JUPYTERLAB_NAME='Pytorch3D'
 
-# Instal basic utilities
-RUN apt-get update \
-    && apt-get update \ 
-    && apt-get upgrade -y \
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
+    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub \
+     # Install some libraries. 
+    && apt-get update\
+    && apt-get install ffmpeg libsm6 libxext6  -y 
+   
+    # Install PyTorch3D (+ dependencies)
+RUN pip install -U iopath fvcore \
+    && curl -LO https://github.com/NVIDIA/cub/archive/1.10.0.tar.gz \
+    && tar xzf 1.10.0.tar.gz \
+    && export CUB_HOME=$PWD/cub-1.10.0 \
+    && pip install pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py39_cu113_pyt1110/download.html \
 
-    && apt install -qy libglib2.0-0 \
-    && apt install -y openssh-server \
-    && apt-get install -y --no-install-recommends git wget curl g++ cmake unzip bzip2 build-essential ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-
-ENV PATH $CONDA_DIR/bin:$PATH
-    # Download miniconda + install it. 
-RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda$CONDA_PYTHON_VERSION-4.7.12.1-Linux-x86_64.sh -O /tmp/miniconda.sh \
-    && echo 'export PATH=$CONDA_DIR/bin:$PATH' > /etc/profile.d/conda.sh \
-    && echo "conda activate base" >> ~/.bashrc \
-    && /bin/bash /tmp/miniconda.sh -b -p $CONDA_DIR \
-    && apt-get clean \
-    && rm -rf /tmp/*  \
-    && rm -rf /var/lib/apt/lists/* \
-
-    # Setup Torch 1.7.1 with Python 3.8 + PyTorch3d and some dependencies.
-    && conda install -y python=3.8 pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cudatoolkit=11.0 -c pytorch \
-    && conda install -c fvcore -c iopath -c conda-forge fvcore iopath \
-    && conda install -y -c bottler nvidiacub  \
-    && conda install -y pytorch3d==0.4.0 -c pytorch3d \
-
-    #Install JupyterLab + some extensions. 
-    && conda install -y  jupyterlab nodejs -c conda-forge \
-    && jupyter labextension install @jupyterlab/toc \
+    # Manage some extension for JupyterLab 
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
     && jupyter lab build --name=$JUPYTERLAB_NAME \
-
-    #Install some basic libs. 
-    && conda install -y boto3 numpy scikit-image scikit-learn matplotlib tqdm setproctitle \
-    && conda install pip \
-    && pip install mlflow \
-    && conda clean -ya \
-
-    #Build METRO distance from source. 
-    && mkdir external \
-    && cd external \
-    && git clone https://github.com/ThibaultGROUEIX/metro_sources.git \
-    && cd ./metro_sources \
-    && python setup.py --build 
+    && jupyter labextension install @jupyterlab/toc \
+    && jupyter labextension install jupyter-threejs 
