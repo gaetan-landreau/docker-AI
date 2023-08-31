@@ -1,8 +1,9 @@
 version: "3.5"
 
 services:
+
   lab:
-    image: "gaetanlandreau/pytorch3d:v0.0.1"
+    image: "gaetanlandreau/pytorch:latest_test" #"gaetanlandreau/pytorch3d:v0.1.0_test" #3d:v0.1.0_test" #"gaetanlandreau/pytorch3d:v0.0.0"
     runtime: nvidia
     build: . 
     restart: always
@@ -34,7 +35,61 @@ services:
       # Mount the root folder of the project. 
       - type: bind
         source: /home/gaetan/PhD/AdaptativeSR/
-        target: /root/
+        target: /root/AdaptativeSR
+
+      # Mount the source code from Topological Mofification Network
+      - type: bind
+        source: /home/gaetan/PhD/TMNet/
+        target: /root/TMN 
+        
+      # Mount ChamferDistancePytorch 
+      - type: bind
+        source: /home/gaetan/PhD/ChamferDistancePytorch
+        target: /root/ChamferDist 
+
+      # Mount GIRAFFE
+      - type: bind
+        source: /home/gaetan/PhD/giraffe
+        target: /root/giraffe
+      
+      # Mount ML-GSN
+      - type: bind
+        source: /home/gaetan/PhD/ml-gsn
+        target: /root/ml-gsn
+
+      # Mount DPR 
+      - type: bind
+        source: /home/gaetan/PhD/DPR
+        target: /root/DPR
+
+      # Mount epipolarNVS
+      - type: bind 
+        source: /home/gaetan/PhD/epipolarNVS
+        target: /root/epipolarNVS
+
+      # Mount Lama
+      - type: bind
+        source: /home/gaetan/lama
+        target: /root/lama
+
+      # Mount RealSR
+      - type: bind
+        source: /home/gaetan/RealSR
+        target: /root/RealSR
+      
+      # Mount AmazonIndia
+      - type: bind
+        source: /home/gaetan/AmazonIndia
+        target: /root/AmazonIndia
+
+      # Mount Restormer
+      - type: bind
+        source: /home/gaetan/Restormer
+        target: /root/Restormer
+        
+      
+     
+      
 
   mlflow:
     build: 
@@ -45,8 +100,8 @@ services:
     container_name: mlflow-tracking
     env_file:
       - .env
-    links: 
-      - lab:lab 
+    #links: 
+      #- lab:lab 
  
     command: "mlflow server -h 0.0.0.0 --backend-store-uri /mlruns_backend/ --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
     ports:
@@ -63,7 +118,3 @@ services:
       - type: bind
         source: /data1/gaetan/PhD/mlruns_backend/
         target: /mlruns_backend/ 
-
-secrets: 
-  ssh_key:
-    file: /home/gaetan/.ssh/id_rsa

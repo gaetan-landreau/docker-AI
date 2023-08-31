@@ -3,11 +3,10 @@
 dpl ?= /home/gaetan/.dockerhub.env
 include $(dpl)
 export $(shell sed 's/=.*//' $(dpl))
- #ai-deep3d#pytorch3d
-DOCKER_NAME ?=pytorch3d
+
+DOCKER_NAME ?=pytorch
 DOCKER_USR ?=gaetanlandreau
 
-#DOCKER_NAME ?=
 build: ## Build the image
 	 docker build -t $(DOCKER_USR)/$(DOCKER_NAME) .
 build-f: ## Build the image based on a specific Dockerfile (with more than one exist in the current dir.)
@@ -22,7 +21,7 @@ stop: ## Stop and remove a running container
 release: build-nc publish ## Make a release by building and publishing the `{version}` ans `latest` tagged containers.
 
 # Docker publish
-publish: login publish-latest publish-version ## Publish the `{version}` ans `latest` tagged containers.
+publish: login publish-latest publish-version ## Publish the `{version}` ans `latest` tagged containers. publish-latest before publish-version
 
 publish-latest: tag-latest ## Publish the `latest` taged container. 
 	@echo 'publish latest to $(DOCKER_USR) Docker Hub.'
