@@ -2,119 +2,31 @@ version: "3.5"
 
 services:
 
-  lab:
-    image: "gaetanlandreau/pytorch:latest_test" #"gaetanlandreau/pytorch3d:v0.1.0_test" #3d:v0.1.0_test" #"gaetanlandreau/pytorch3d:v0.0.0"
-    runtime: nvidia
-    build: . 
+  main:
+    image: gaetanlandreau/pytorch:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.pytorch
+      target: torch
+
     restart: always
-    shm_size: '2gb'
-    env_file:
-      - .env
-    command: "jupyter-lab --ip=0.0.0.0 --allow-root --no-browser"  
-    ports:
-      - 6843:8888
+    shm_size: '4gb'
+    
+    command: "tail -f > dev 2&1"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 2
+              capabilities: [gpu]
+    
     working_dir: /root/
 
+    
     volumes:
-
-      # AWS credentials. 
+        
+      # Datadrive . 
       - type: bind
-        source: /home/gaetan/.aws/
-        target: /root/.aws
-
-      #ssh Key
-      - type: bind
-        source: /home/gaetan/.ssh/
-        target: /root/.ssh/
-       
-      # Datadrive on Athena. 
-      - type: bind
-        source: /data1/gaetan/PhD/
+        source: /data2/datasets/
         target: /data/
-
-      # Mount the root folder of the project. 
-      - type: bind
-        source: /home/gaetan/PhD/AdaptativeSR/
-        target: /root/AdaptativeSR
-
-      # Mount the source code from Topological Mofification Network
-      - type: bind
-        source: /home/gaetan/PhD/TMNet/
-        target: /root/TMN 
-        
-      # Mount ChamferDistancePytorch 
-      - type: bind
-        source: /home/gaetan/PhD/ChamferDistancePytorch
-        target: /root/ChamferDist 
-
-      # Mount GIRAFFE
-      - type: bind
-        source: /home/gaetan/PhD/giraffe
-        target: /root/giraffe
-      
-      # Mount ML-GSN
-      - type: bind
-        source: /home/gaetan/PhD/ml-gsn
-        target: /root/ml-gsn
-
-      # Mount DPR 
-      - type: bind
-        source: /home/gaetan/PhD/DPR
-        target: /root/DPR
-
-      # Mount epipolarNVS
-      - type: bind 
-        source: /home/gaetan/PhD/epipolarNVS
-        target: /root/epipolarNVS
-
-      # Mount Lama
-      - type: bind
-        source: /home/gaetan/lama
-        target: /root/lama
-
-      # Mount RealSR
-      - type: bind
-        source: /home/gaetan/RealSR
-        target: /root/RealSR
-      
-      # Mount AmazonIndia
-      - type: bind
-        source: /home/gaetan/AmazonIndia
-        target: /root/AmazonIndia
-
-      # Mount Restormer
-      - type: bind
-        source: /home/gaetan/Restormer
-        target: /root/Restormer
-        
-      
-     
-      
-
-  mlflow:
-    build: 
-      context: . 
-      dockerfile: Dockerfile.mlflow
-        
-    image: "gaetanlandreau/mlflow:latest"
-    container_name: mlflow-tracking
-    env_file:
-      - .env
-    #links: 
-      #- lab:lab 
- 
-    command: "mlflow server -h 0.0.0.0 --backend-store-uri /mlruns_backend/ --default-artifact-root ${ML_ARTIFACT_S3_PATH}"  
-    ports:
-      - 5000:5000    
-
-    volumes:
-     
-      # AWS credentials. 
-      - type: bind
-        source: /home/gaetan/.aws/
-        target: /root/.aws
-      
-      # Datadrive backend saving on Athena. 
-      - type: bind
-        source: /data1/gaetan/PhD/mlruns_backend/
-        target: /mlruns_backend/ 
