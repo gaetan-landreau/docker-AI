@@ -1,25 +1,26 @@
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Minimal required libs + Python3.8 
+#Install basic utilities.
 RUN apt-get update \
-    && apt-get install -y software-properties-common \ 
-    && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get install -y python3.10 python3.10-dev python3-pip python3-distutils python3-setuptools \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
-    && update-alternatives --set python /usr/bin/python3.9 \
-    && python -m pip install --upgrade pip \
-
-    #Install basic utilities.
-    && apt install -qy libglib2.0-0 \
+    &&  apt install -qy libglib2.0-0 \
     && apt install -y openssh-server \
     && apt-get install ffmpeg libsm6 libxext6 -y \     
-    && apt-get install -y --no-install-recommends git wget curl gcc g++ cmake unzip bzip2 build-essential ca-certificates \
+    && apt-get install -y --no-install-recommends  python3-pip git wget curl gcc g++ cmake unzip bzip2 build-essential ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
+
+RUN  apt update \
+    && apt-get update \
+    && apt install -y software-properties-common \
+    && add-apt-repository -y ppa:deadsnakes/ppa \
+    && apt-get install -y python3.8-dev python3-distutils python3-setuptools python3-pip \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1 \
+    && update-alternatives --set python /usr/bin/python3.8 \
+    && python3 -m pip install --upgrade pip
 
 # Install PyTorch 2.0.1 + some basic libs. 
 COPY requirements_torch.txt /tmp/requirements_torch.txt
 RUN pip install --no-cache-dir -r /tmp/requirements_torch.txt \
-    && rm -r /tmp/requirements_torch.txt 
+    && rm -r /tmp/requirements_torch.txt  \

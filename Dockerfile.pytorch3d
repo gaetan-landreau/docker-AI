@@ -1,4 +1,4 @@
-FROM gaetanlandreau/pytorch:1.11.0
+FROM gaetanlandreau/pytorch:latest
 
 ARG JUPYTERLAB_NAME='Pytorch3D'
 
@@ -7,17 +7,12 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
      # Install some libraries. 
     && apt-get update\
     && apt-get install ffmpeg libsm6 libxext6  -y 
-   
     # Install PyTorch3D (+ dependencies)
 RUN pip install -U iopath fvcore \
     && curl -LO https://github.com/NVIDIA/cub/archive/1.10.0.tar.gz \
     && tar xzf 1.10.0.tar.gz \
+    && export FORCE_CUDA=1 \
     && export CUB_HOME=$PWD/cub-1.10.0 \
-    && pip install pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py39_cu113_pyt1110/download.html \
+    && export CUDA_HOME=/usr/local/cuda-11.7 
 
-    # Manage some extension for JupyterLab 
-    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs \
-    && jupyter lab build --name=$JUPYTERLAB_NAME \
-    && jupyter labextension install @jupyterlab/toc \
-    && jupyter labextension install jupyter-threejs 
+RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable" 
