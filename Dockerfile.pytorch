@@ -11,16 +11,43 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-RUN  apt update \
-    && apt-get update \
-    && apt install -y software-properties-common \
-    && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get install -y python3.8-dev python3-distutils python3-setuptools python3-pip \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1 \
-    && update-alternatives --set python /usr/bin/python3.8 \
-    && python3 -m pip install --upgrade pip
+#RUN  apt update \
+#    && apt-get update \
+#    && apt install -y software-properties-common \
+#    && add-apt-repository -y ppa:deadsnakes/ppa \
+#    && apt-get install -y python3.8-dev python3-distutils python3-setuptools python3-pip \
+#    && update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1 \
+#    && update-alternatives --set python /usr/bin/python3.8 \
+#    && python3 -m pip install --upgrade pip
+
+#Minimal required libs + Python3.9
+RUN apt-get update \
+    && apt-get install -y software-properties-common \ 
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get install -y python3.9 python3.9-dev python3-pip python3.9-distutils python3-setuptools \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 \
+
+    && update-alternatives --set python /usr/bin/python3.9 
 
 # Install PyTorch 2.0.1 + some basic libs. 
 COPY requirements_torch.txt /tmp/requirements_torch.txt
 RUN pip install --no-cache-dir -r /tmp/requirements_torch.txt \
-    && rm -r /tmp/requirements_torch.txt  \
+    && rm -r /tmp/requirements_torch.txt  
+
+
+
+ARG USER_ID=1006
+RUN useradd -m -d /home/user -g root -G sudo -u ${USER_ID} user
+RUN usermod -aG sudo user
+# Set user password
+RUN echo "user:user" | chpasswd
+# Ensure sudo group users are not asked for a password when using sudo command by ammending sudoers file
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Switch to new uer and workdir.
+USER ${USER_ID}
+WORKDIR /home/user
+
+
+# 
